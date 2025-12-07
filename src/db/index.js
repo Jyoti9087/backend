@@ -1,4 +1,4 @@
-
+ //connect to database(here mongodb connected)
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js"
 
