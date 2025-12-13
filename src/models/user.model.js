@@ -1,6 +1,7 @@
 import mongoose,{Schema} from "mongoose";
 import { email, lowercase } from "zod";
 import { required } from "zod/mini";
+//import the jsonwebtoken library to crete and verify json web tokens
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
@@ -49,33 +50,44 @@ const userSchema=new Schema({
     }
 },{timestamps:true})
 
-//pre middleware
+//pre middleware hook
 //here we use function rather than arro function,becoz arrow function does not access "this",
 
 userSchema.pre("save",async function(next){
-
+    //if the password was modified ,it hashes the password,if the password has not changed moves to the next action
     if(!this.isModified("password")) return (next);
     //this.password -> hook
-   this.password=bcrypt.hash(this.password,10) //10-round
+   this.password=await bcrypt.hash(this.password,10) //10-round
    next()
 })
 
+//define a custom method to check if the provided plaintext password is correct or not
 userSchema.methods.isPasswordCorrect=async function(password){
+    //bcrypt.compare() compare the provided plaintext password with hashed password (this.password) stored in database
+    //it will return true or false
    return await bcrypt.compare(password,this.password)
 }
+
+//custom method to create and sign a new access token
 userSchema.methods.generateAccessToken=function(){
+    //use jsonwebtoken to sign(create) the token
    return jwt.sign({
+         //defines payloads(data) of the token
         _id:this._id,
         email:this.email,
         username:this.username,
         fullname:this.fullname
     },
+    //use the secret key for authenticity.
     process.env.ACCESS_TOKEN_SECRET,
+    //sets the token to expire after a duration defined.
     {
         expiresIn:process.env.REFRESH_TOKEN_EXPIRY
     }
 )
 }
+
+//custom method to sign new refresh token
 userSchema.methods.generateRefreshToken=function(){
      return jwt.sign({
         _id:this._id,

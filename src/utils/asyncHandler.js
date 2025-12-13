@@ -2,9 +2,9 @@
 
 // asyncHandler is the main function that return another function(an express middleware)
 const asyncHandler=(requestHandler)=>{
-    (req,res,next)=>{
+   return (req,res,next)=>{
         Promise.resolve(requestHandler(req,res,next)).
-        reject((err)=>next(err))
+        catch((err)=>next(err))
         //if any error occured in requestHandler then thisline catches the error(err)  and passes to express error handler using next(err)
     }
 }
