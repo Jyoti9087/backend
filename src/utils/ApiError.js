@@ -6,17 +6,17 @@ class ApiError extends Error{
         //this accepts the HTTP status code(like 404 or 500)
         statusCode,
         //this accepts the error messege
-        messege="Something went wrong",
+        message="Something went wrong",
         errors=[],
         stack=""
     ){
 
         //this calls the constructor of the parent error class and passes the messege to it
         //this sets up the error basic property correctly
-        super(messege)
+        super(message)
         this.statusCode=statusCode
         this.data=null  
-        this.message=messege
+        this.message=message
         this.success=false;
         this.errors=errors
 
@@ -26,7 +26,7 @@ class ApiError extends Error{
         }else{
             Error.captureStackTrace(this,this.constructor)
         }
-      }
+    }
 }
 // this makes the ApiError class available to be imported and used in other files
 export {ApiError}

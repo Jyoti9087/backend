@@ -30,7 +30,7 @@ const userSchema=new Schema({
         trim:true,
         index:true
     },
-     avater:{
+     avatar:{
         type:String, //cloudinary url
         required:true,
     },
@@ -55,10 +55,10 @@ const userSchema=new Schema({
 
 userSchema.pre("save",async function(next){
     //if the password was modified ,it hashes the password,if the password has not changed moves to the next action
-    if(!this.isModified("password")) return (next);
+    if(!this.isModified("password")) 
     //this.password -> hook
    this.password=await bcrypt.hash(this.password,10) //10-round
-   next()
+  
 })
 
 //define a custom method to check if the provided plaintext password is correct or not
@@ -82,7 +82,7 @@ userSchema.methods.generateAccessToken=function(){
     process.env.ACCESS_TOKEN_SECRET,
     //sets the token to expire after a duration defined.
     {
-        expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+        expiresIn:process.env.ACCESS_TOKEN_EXPIRY
     }
 )
 }
@@ -92,7 +92,7 @@ userSchema.methods.generateRefreshToken=function(){
      return jwt.sign({
         _id:this._id,
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     {
         expiresIn:process.env.REFRESH_TOKEN_EXPIRY
     }
