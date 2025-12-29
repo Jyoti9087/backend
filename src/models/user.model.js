@@ -43,7 +43,8 @@ const userSchema=new Schema({
     },
     password:{
         type:String,
-        required:[true,'password is required']
+        required:[true,'password is required'],
+        select:false
     },
     refreshToken:{
         type:String
@@ -55,10 +56,10 @@ const userSchema=new Schema({
 
 userSchema.pre("save",async function(next){
     //if the password was modified ,it hashes the password,if the password has not changed moves to the next action
-    if(!this.isModified("password")) 
+    if(!this.isModified("password")) return next()
     //this.password -> hook
    this.password=await bcrypt.hash(this.password,10) //10-round
-  
+   next()
 })
 
 //define a custom method to check if the provided plaintext password is correct or not
